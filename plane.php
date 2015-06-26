@@ -23,9 +23,17 @@ class Plane {
     public function getRoll() {
         return $this->roll;
     }
+    public function getPitch() {
+        return $this->pitch;
+    }
     public function roll($inc) {
         $this->roll += $inc;
         if ($this->roll > 1) $this->roll -= 2;
         elseif ($this->roll <= -1) $this->roll += 2;
+    }
+    public function pitch($inc) {
+        $this->pitch += $inc;
+        if ($this->pitch > 1) $this->pitch -= 2;
+        elseif ($this->pitch <= -1) $this->pitch += 2;
     }
 }
