@@ -6,16 +6,15 @@ class Loop {
         $time = 0;
         system("stty -icanon");
         while (true) {
-        //for ($i = 0; $i <= 20; $i++) {
             self::listen();
-            //$plane->roll(0.1);
+            $plane->step(0.2);
             $time += 0.2;
             self::draw($time);
             usleep(200000);
         }
     }
     private static function draw($time) {
-        echo View::draw(self::$plane->getRoll(), self::$plane->getPitch(), $time);
+        echo View::draw(self::$plane->getRoll(), self::$plane->getPitch(), $time, self::$plane->getSpeed(), self::$plane->getAltitude(), self::$plane->getPower());
     }
     private static function listen() {
         stream_set_blocking(STDIN, false);
@@ -32,6 +31,15 @@ class Loop {
                     break;
                 case '2':
                     self::$plane->pitch(0.05);
+                    break;
+                case 'a':
+                case 'A':
+                    self::$plane->throttle(5);
+                    break;
+                case 'z':
+                case 'Z':
+                    self::$plane->throttle(-5);
+                    break;
             }
         }
     }
