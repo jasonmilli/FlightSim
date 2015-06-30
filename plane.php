@@ -15,6 +15,7 @@ class Plane {
     private $wing_span;
     private $fuselage_diameter;
     private $fuselage_length;
+    private $climbing_rate;
     public function __construct (
         $latitude = 0,
         $longitude = 0,
@@ -30,7 +31,8 @@ class Plane {
         $wing_height = 0.5,
         $wing_span = 10,
         $fuselage_radius = 1,
-        $fuselage_length = 10
+        $fuselage_length = 10,
+        $climbing_rate = 0
     ) {
         $this->latitude = $latitude;
         $this->longitude = $longitude;
@@ -47,6 +49,7 @@ class Plane {
         $this->wing_span = $wing_span;
         $this->fuselage_radius = $fuselage_radius;
         $this->fuselage_length = $fuselage_length;
+        $this->climbing_rate = $climbing_rate;
     }
     public function getRoll() {
         return $this->roll;
@@ -78,11 +81,26 @@ class Plane {
     }
     public function step($time) {
         $this->speed($time);
+        $this->climbing_rate($time);
+        $this->altitude($time);
+        echo "Climbing rate: {$this->climbing_rate}\n";
     }
     private function speed($time) {
         $area = $this->wing_span * $this->wing_height + $this->fuselage_radius * M_PI * 2;
         $drag_force = 0.5 * 1.225 * pow($this->speed, 2) * 0.04 * $area;
-        $force = 0.8 * $this->throttle * $this->max_power / 100 - $drag_force;
-        $this->speed += 5 * $force / $this->mass;
+        $power = 0.8 * $this->throttle * $this->max_power / 100;
+        $force = $power / $this->speed - $drag_force;
+        $this->speed += (1 / $time) * $force / $this->mass;
+    }
+    private function climbing_rate($time) {
+        $area = $this->wing_span * $this->wing_width;
+        $lift_force = 0.5 * 1.225 * pow($this->speed, 2) * $area * 0.0002;
+        $whole_area = $area + 2 * $this->fuselage_radius * $this->fuselage_length;
+        $drag_force = 0.5 * 1.225 * pow($this->climbing_rate, 2) * 0.04 * $whole_area;
+        $force = $lift_force - 10 - $drag_force;
+        $this->climbing_rate += (1 / $time) * $force / $this->mass;
+    }
+    private function altitude($time) {
+        $this->altitude += $this->climbing_rate * $time;
     }
 }

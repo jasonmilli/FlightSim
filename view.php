@@ -6,6 +6,8 @@ class View {
     private static $pitch;
     private static $elevation;
     public static function draw($roll, $pitch, $time, $speed, $altitude, $throttle) {
+        $altitude = floor($altitude);
+        $time = round($time,5);
         $header_left = "Altitude: {$altitude}m ";
         $header_right = " Power: {$throttle}w";
         $footer = "Flight time: {$time}s ";
